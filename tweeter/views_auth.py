@@ -9,14 +9,14 @@ from django.conf import settings
 def test(request, *args, **kwargs):
 	return render(request, 'base.html')
 	
-def register(request, **kwargs):
-	auth = tweepy.OAuthHandler( settings.TWITTER_CONSUMER_KEY,  settings.TWITTER_CONSUMER_SECRET, 'http://127.0.0.1:8000/auth/register2')
+def signInWithTwitter(request, **kwargs):
+	auth = tweepy.OAuthHandler( settings.TWITTER_CONSUMER_KEY,  settings.TWITTER_CONSUMER_SECRET, 'http://127.0.0.1:8000/auth/signInWithTwitter2')
 	auth.secure = True
-	authorization_url = auth.get_authorization_url()
+	authorization_url = auth.get_authorization_url( signin_with_twitter=True)
 	request.session['token'] = auth.request_token
 	return redirect( authorization_url)
 
-def register2(request, **kwargs):
+def signInWithTwitter2(request, **kwargs):
 	verifier = request.REQUEST['oauth_verifier']
 	auth = tweepy.OAuthHandler( settings.TWITTER_CONSUMER_KEY,  settings.TWITTER_CONSUMER_SECRET)
 	auth.request_token = request.session['token']
@@ -39,26 +39,12 @@ def register2(request, **kwargs):
 		response = "Created"
 	user.save()
 	addUserDataToSession( request, user)
-	return HttpResponse( response + " " + username )
+	return redirect( 'main')
 
-def login(request, redirectTo=None,**kwargs):
-	username = request.REQUEST.get('username', None)
-	if username:
-		try:
-			user = User.objects.get(username = username)
-			addUserDataToSession( request, user)	
-			if redirectTo:
-				redirect( redirectTo)
-			else:
-				redirect( 'main')
-		except ObjectDoesNotExist:
-			return HttpResponse( username + " does not exists")
-	return HttpResponse("Request does not contain field 'username'")
-
-def logout(request, **kwargs):
-	removeUserDataFromSession()
-	return HttpResponse("Logged out")
-
+def logout(request, *args, **kwargs):
+	removeUserDataFromSession(request)
+	return redirect( 'main')
+	
 def ensureUserLoggedIn( fun ):
 	def f(request, *args, **kwargs):
 		if isUserLoggedIn(request):
