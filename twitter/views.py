@@ -1,8 +1,11 @@
+import tweepy
+
+from models import Event, User, Comment
+
 from django.shortcuts import render, redirect
 from django.conf import settings
 from django.forms import ModelForm
-from models import Event, User, Comment
-import tweepy
+
 from helper_auth import ensureUserLoggedIn
 
 class EventForm(ModelForm):

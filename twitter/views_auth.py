@@ -1,9 +1,9 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
 import tweepy
-from pprint import pprint
+
 from models import User
-from  django.core.exceptions import ObjectDoesNotExist
+
+from django.shortcuts import render, redirect
+from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.core.urlresolvers import reverse, resolve
 from django.http import Http404	
@@ -13,7 +13,6 @@ def signInWithTwitter(request, **kwargs):
 	auth.secure = True
 	authorization_url = auth.get_authorization_url( signin_with_twitter=True)
 	request.session['token'] = auth.request_token
-	request.session['redirectTo'] = kwargs['redirectTo']
 	return redirect( authorization_url)
 
 def signInWithTwitter2(request, **kwargs):
@@ -27,20 +26,19 @@ def signInWithTwitter2(request, **kwargs):
 	    raise
 	api = tweepy.API(auth)
 
-	response = str()
 	username = api.me().screen_name
 	try:
 		user = User.objects.get(username = username)
 		user.access_token = auth.access_token
 		user.access_token_secret = auth.access_token_secret
-		response = "Updated"
 	except ObjectDoesNotExist:
 		user = User(username = username, access_token=auth.access_token, access_token_secret=auth.access_token_secret)
-		response = "Created"
 	user.save()
 	addUserDataToSession( request, user)
-	redirectTo = request.session['redirectTo']
-	del request.session['redirectTo']
+	redirectTo = request.session.get('redirectTo', 'main')
+	print redirectTo
+	if 'redirectTo' in request.session:
+		del request.session['redirectTo']
 	try:
 		match = resolve( redirectTo)
 		return redirect( match.url_name, *(match.args), **(match.kwargs))

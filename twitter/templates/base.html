@@ -33,7 +33,7 @@
 			          	<li><a href="#about">{{request.session.username}}</a></li>
 			            <li><a href="{% url 'logout' %}">Log Out</a></li>
 		          	{% else %}
-		            	<li><a href="{% url 'signInWithTwitter' redirectTo='main' %}">Sign In With Twitter</a></li>
+		            	<li><a href="{% url 'signInWithTwitter' %}">Sign In With Twitter</a></li>
 		            {% endif %}
 	          	</ul>
 	        </div>

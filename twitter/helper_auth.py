@@ -6,8 +6,8 @@ def ensureUserLoggedIn( fun ):
 		if isUserLoggedIn(request):
 			return fun( request, *args, **kwargs)
 		else:
-			print request.path
-			return redirect( 'signInWithTwitter', redirectTo= '/' + request.path)
+			request.session['redirectTo'] = request.path
+			return redirect( 'signInWithTwitter')
 	return f
 
 def isUserLoggedIn(request):
