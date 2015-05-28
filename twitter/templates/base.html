@@ -21,13 +21,19 @@
 	          			<li>
 	          		{% endif %}
 	          		<a href="{% url 'main' %}">Home</a></li>
+	          		{% if request.path == '/app/events' %}
+	          			<li class="active">
+	          		{% else %}
+	          			<li>
+	          		{% endif %}
+	          		<a href="{% url 'events' %}">Events</a></li>
 		        </ul>
 		        <ul class="nav navbar-nav navbar-right">
 		          	{% if 'username' in request.session %}
 			          	<li><a href="#about">{{request.session.username}}</a></li>
 			            <li><a href="{% url 'logout' %}">Log Out</a></li>
 		          	{% else %}
-		            	<li><a href="{% url 'signInWithTwitter' %}">Sign In With Twitter</a></li>
+		            	<li><a href="{% url 'signInWithTwitter' redirectTo='main' %}">Sign In With Twitter</a></li>
 		            {% endif %}
 	          	</ul>
 	        </div>

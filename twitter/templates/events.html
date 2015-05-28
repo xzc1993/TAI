@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<table class="table table-bordered">
+<thead>
+	<th>Tag</th>
+	<th>Description</th>
+	<th>Date</th>	
+	<th>Action</th>
+</thead>
+<tbody>
+	
+{% for event in events %}
+<tr>
+	<td>
+		{{event.tag}}
+	</td>
+  	<td>
+  		{{event.content}}
+  	</td>  	
+  	<td>
+  		{{event.created}}
+  	</td> 
+    <td>
+  		<a href="{% url 'showEvent' event_id=event.id%}">
+  			<button type="button" class="btn btn-primary">
+  				Show
+  			</button>
+  		</a>
+  	</td> 
+</tr>
+{% endfor %}
+</tbody>
+</table>
+<div class="row">
+	<div class="col-md-10"></div>
+  	<div class="col-md-2">
+  		<a href="{% url 'newEvent' %}">
+  			<button type="button" class="btn btn-primary">
+  				New Event
+  			</button>
+  		</a>
+  	</div>
+</div>
+{% endblock %}

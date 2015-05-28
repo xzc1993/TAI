@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{{ form }}
+<table class="table table-bordered">
+<thead>
+	<th>User</th>
+	<th>Content</th>	
+	<th>Date</th>
+</thead>
+<tbody>
+{% for comment in comments %}
+<tr>
+	<td>
+		{{comment.user.username}}
+	</td>
+  	<td>
+  		{{comment.content}}
+  	</td>  	
+  	<td>
+  		{{comment.created}}
+  	</td>  	
+</tr>
+{% endfor %}
+</tbody>
+</table>
+<div class="row">
+	<div class="col-md-10"></div>
+  	<div class="col-md-2">
+  		<a href="{% url 'newComment' event_id=event_id %}">
+  			<button type="button" class="btn btn-primary">
+  				New Comment
+  			</button>
+  		</a>
+  	</div>
+</div>
+{% endblock %}
+
