@@ -23,6 +23,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'ybwn3x#p5-flp)e+%g%#yjex1*-1dilmx9x%hpxwjf&9+t#+vq'
 TWITTER_CONSUMER_KEY = 'utPQjRcLJOleOaZBCLF6hVS8G'
 TWITTER_CONSUMER_SECRET = 'LtGnEpS43IEMSOqQiUBBlrX3TLkLiKlUYpLtNpepYOEzA8UUts'
+TWITTER_ACCESS_TOKEN="3300395421-2TRj64DiwA6C0LnElK2XcTaYybGTJnRApbvbYRp"
+TWITTER_ACCESS_TOKEN_SECRET="Dcqe9P5akrLZMbYjWes4MtdY3NsjpjYqGzmrHbzYq6e7K"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 

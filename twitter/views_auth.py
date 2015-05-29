@@ -36,7 +36,6 @@ def signInWithTwitter2(request, **kwargs):
 	user.save()
 	addUserDataToSession( request, user)
 	redirectTo = request.session.get('redirectTo', 'main')
-	print redirectTo
 	if 'redirectTo' in request.session:
 		del request.session['redirectTo']
 	try:

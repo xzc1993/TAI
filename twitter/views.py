@@ -1,6 +1,6 @@
 import tweepy
 
-from models import Event, User, Comment
+from models import Event, User, Comment, TwitterDAO
 
 from django.shortcuts import render, redirect
 from django.conf import settings
@@ -43,6 +43,7 @@ def createEvent(request, *args, **kwargs):
 	api = tweepy.API(auth)
 	api.update_status( status= (event.tag + '\n' + event.content))
 	event.save()
+	TwitterDAO.updateCommentListener()
 	return redirect('events')
 
 @ensureUserLoggedIn
