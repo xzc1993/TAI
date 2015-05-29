@@ -6,6 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from tweepy.streaming import StreamListener
 from tweepy import OAuthHandler
 from tweepy import Stream
+from threading import Lock
 
 class User(models.Model):
 	username = models.CharField(max_length=64)
@@ -26,6 +27,7 @@ class Comment(models.Model):
 
 class TwitterDAO(models.Model):
 
+	mutex = Lock()
 	class NewEventListener(StreamListener):
 		def on_data(self, data):
 			try:
@@ -105,7 +107,7 @@ class TwitterDAO(models.Model):
 		auth = OAuthHandler( settings.TWITTER_CONSUMER_KEY, settings.TWITTER_CONSUMER_SECRET)
 		auth.set_access_token( settings.TWITTER_ACCESS_TOKEN, settings.TWITTER_ACCESS_TOKEN_SECRET)
 
-		TwitterDAO.streamComment.disconnect()
+		#TwitterDAO.streamComment.disconnect()
 		unique_tags = list(set([ event.tag for event in Event.objects.all()]))
 		print unique_tags
 		TwitterDAO.streamComment = Stream( auth, TwitterDAO.NewCommentListener())
