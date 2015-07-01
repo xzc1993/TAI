@@ -27,9 +27,12 @@ class Comment(models.Model):
 
 class TwitterDAO(models.Model):
 
+	event_stream_list = list()
 	mutex = Lock()
+
 	class NewEventListener(StreamListener):
 		def on_data(self, data):
+			print 'NewEventListener'
 			try:
 				data = json.loads(data)
 				username = data['user']['screen_name']
@@ -52,7 +55,7 @@ class TwitterDAO(models.Model):
 				event = Event(user=user, tag=tag, content=content.replace('#krzieba_TAI', '').replace( tag, '') , created=created)
 				print 'Saving...' 	
 				event.save()
-				TwitterDAO.updateCommentListener()
+				TwitterDAO.updateCommentListener( tag)
 				return True
 			except Exception as e:
 				print e
@@ -109,7 +112,7 @@ class TwitterDAO(models.Model):
 			except Exception as e:
 				print username, hashtags
 				print e
-				print 'Received not usable status in NewCommentListener'
+				print 'Received malformed status in NewCommentListener'
 				return True
 
 		def on_error(self, status):
@@ -120,23 +123,30 @@ class TwitterDAO(models.Model):
 		auth = OAuthHandler( settings.TWITTER_CONSUMER_KEY, settings.TWITTER_CONSUMER_SECRET)
 		auth.set_access_token( settings.TWITTER_ACCESS_TOKEN, settings.TWITTER_ACCESS_TOKEN_SECRET)
 
+
 		unique_tags = list(set([ event.tag for event in Event.objects.all()]))
 
-		print 'Connecting stream', unique_tags
-		TwitterDAO.streamComment = Stream( auth, TwitterDAO.NewCommentListener(unique_tags))
-		TwitterDAO.streamComment.filter(track=unique_tags, async=True)
+		print unique_tags
+		with TwitterDAO.mutex:
+			for tag in unique_tags:
+				print tag
+				streamComment = Stream( auth, TwitterDAO.NewCommentListener(tag))
+				streamComment.filter( track=[tag], async=True)
+				TwitterDAO.event_stream_list.append( streamComment)
 
 		TwitterDAO.streamEvent = Stream(auth, TwitterDAO.NewEventListener())
 		TwitterDAO.streamEvent.filter( track=['#krzieba_TAI'], async=True)
 
 	@staticmethod 
-	def updateCommentListener():
+	def updateCommentListener( new_tag):
 		auth = OAuthHandler( settings.TWITTER_CONSUMER_KEY, settings.TWITTER_CONSUMER_SECRET)
 		auth.set_access_token( settings.TWITTER_ACCESS_TOKEN, settings.TWITTER_ACCESS_TOKEN_SECRET)
 
-		print 'Disconnecting old stream....'
 		TwitterDAO.streamComment.disconnect()
 		unique_tags = list(set([ event.tag for event in Event.objects.all()]))
-		print 'Connecting stream', unique_tags
-		TwitterDAO.streamComment = Stream( auth, TwitterDAO.NewCommentListener(unique_tags))
-		TwitterDAO.streamComment.filter(track=unique_tags, async=True)	
+		print unique_tags
+
+		with TwitterDAO.mutex:
+			TwitterDAO.streamComment = Stream( auth, TwitterDAO.NewCommentListener())
+			TwitterDAO.streamComment.filter(track=[new_tag], async=True)	
+			TwitterDAO.event_stream_list.append( streamComment)

@@ -42,9 +42,11 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'bootstrap3',
     'twitter',
+    'debug_toolbar',
 )
 
 MIDDLEWARE_CLASSES = (
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',

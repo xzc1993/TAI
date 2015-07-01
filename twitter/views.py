@@ -5,7 +5,6 @@ from models import Event, User, Comment, TwitterDAO
 from django.shortcuts import render, redirect
 from django.conf import settings
 from django.forms import ModelForm
-
 from helper_auth import ensureUserLoggedIn
 
 class EventForm(ModelForm):
@@ -21,7 +20,7 @@ class CommentForm(ModelForm):
 def main(request, *args, **kwargs):
 	return render(request, 'base.html')
 
-@ensureUserLoggedIn
+
 def events(request, *args, **kwargs):
 	events = Event.objects.all()
 	return render( request, 'events.html', {'events' : events})
@@ -33,7 +32,7 @@ def newEvent(request, *args, **kwargs):
 
 @ensureUserLoggedIn
 def createEvent(request, *args, **kwargs):
-	form = EventForm(request.REQUEST)
+	form = EventForm(request.POST)
 	event = form.save(commit=False)
 	event.user_id = User.objects.get(username=request.session['username']).id
 	event.tag = '#' + event.tag
@@ -41,9 +40,9 @@ def createEvent(request, *args, **kwargs):
 	auth.access_token = request.session['access_token']
 	auth.access_token_secret = request.session['access_token_secret']
 	api = tweepy.API(auth)
-	api.update_status( status= (event.tag + '\n' + event.content))
-	event.save()
-	TwitterDAO.updateCommentListener()
+	api.update_status( status= ( '#krzieba_TAI' + ' ' + event.tag + '\n' + event.content))
+	#event.save()
+	#TwitterDAO.updateCommentListener()
 	return redirect('events')
 
 @ensureUserLoggedIn
@@ -59,7 +58,7 @@ def newComment(request, *args, **kwargs):
 
 @ensureUserLoggedIn
 def createComment(request, *args, **kwargs):
-	form = CommentForm(request.REQUEST)
+	form = CommentForm(request.POST)
 	comment = form.save(commit=False)
 	comment.user_id = User.objects.get(username=request.session['username']).id
 	comment.event_id = kwargs['event_id']
@@ -68,5 +67,5 @@ def createComment(request, *args, **kwargs):
 	auth.access_token_secret = request.session['access_token_secret']
 	api = tweepy.API(auth)
 	api.update_status( status= (comment.event.tag + '\n' + comment.content))
-	comment.save()
+	#comment.save()
 	return redirect('showEvent', event_id=kwargs['event_id'])

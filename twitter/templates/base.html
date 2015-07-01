@@ -30,7 +30,7 @@
 		        </ul>
 		        <ul class="nav navbar-nav navbar-right">
 		          	{% if 'username' in request.session %}
-			          	<li><a href="#about">{{request.session.username}}</a></li>
+			          	<li><a href="javascript:;">{{request.session.username}}</a></li>
 			            <li><a href="{% url 'logout' %}">Log Out</a></li>
 		          	{% else %}
 		            	<li><a href="{% url 'signInWithTwitter' %}">Sign In With Twitter</a></li>
